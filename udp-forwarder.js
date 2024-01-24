@@ -15,7 +15,7 @@ module.exports = {
     }
 };
 
-function defaultMessageAdapter(msg, rInfo) {
+function defaultMessageAdapter(msg, rInfo, fromForwarder) {
     return [msg];
 }
 
@@ -63,7 +63,7 @@ UdpForwarder.prototype.initializeForwarder = function() {
     });
     self.forwarder.on("message", function(msg, rinfo) {
         if (self.sourceRemoteEndpoint !== undefined) {
-            self.messageAdapter(msg, rinfo).forEach(
+            self.messageAdapter(msg, rinfo, true).forEach(
                 function(msg) {
                     self.source.send(msg, self.sourceRemoteEndpoint.port,
                         self.sourceRemoteEndpoint.address);
@@ -95,7 +95,7 @@ UdpForwarder.prototype.initializeSource = function() {
     });
     self.source.on("message", function(msg, rinfo) {
         self.sourceRemoteEndpoint = rinfo;
-        self.messageAdapter(msg, rinfo).forEach(
+        self.messageAdapter(msg, rinfo, false).forEach(
             function(msg) {
                 self.sendAll(msg);
             }
